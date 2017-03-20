@@ -1,56 +1,45 @@
-from numpy import exp, array, random, dot, average
+import numpy as np 
 
-class NeuralNetwork():
-	def __init__(self):
-		random.seed(1)
-  		self.synaptic_weights =  2 * random.random((3, 1)) - 1 #Generate random weigths between 0 and 1 positive or negative
-  		print "Random synaptic weights" 
-  		print self.synaptic_weights
+synaptic_weights = 2*np.random.random((3, 1))-1
 
-	def sigmoid(self, x):
-		return 1 / (1 + exp(-x))
+def sigmoid(x):
+	return 1 / (1 + np.exp(-x))
 
-	def sigmoid_derivative(self, x):
-		return x * (1 - x)		
+def deriv_sigmoid(x):
+	return x * (1 - x)	
 
-	def train(self, train_inputs, right_output, n_iterations):
-		for i in range(n_iterations):
-			partial_result = self.calculate(train_inputs)			
-			error = right_output - partial_result
-			if(i%1000 == 0): print "Error rate: %s %s" %(average(error),"%") #Track error rate
+def backpropagation(inputs, error, partial, synaptic_weights):
+	ajust = np.dot(inputs.T, error*deriv_sigmoid(partial))#ajust synaptic_weights
+	synaptic_weights += ajust	
 
-			adjustment = dot(train_inputs.T, error * self.sigmoid_derivative(partial_result)) 
-			# Adjust the weights.
-			self.synaptic_weights += adjustment
+def calculate_error(outputs, partial):
+	return (outputs - partial)#calculate error, how much data is loss
 
+def train(synaptic_weights, inputs, outputs, train_rate): 
+	for x in range(1,train_rate):
+		sum = np.dot(inputs, synaptic_weights)#sum synaptic_weights and inputs
+		partial = sigmoid(sum)#activaction function
+		error = calculate_error(outputs, partial)
+		if(x%1000 == 0): print "error rate %s: " %(np.average(error))
+		backpropagation(inputs, error, partial, synaptic_weights)
 
-	# The neural network calculates.
-	def calculate(self, inputs):
-		# Pass inputs through our neural network (our single neuron).		
-		sum = dot(inputs, self.synaptic_weights)
-		return self.sigmoid(sum)
+def test(trained_weigths, inputs):
+	return sigmoid(np.dot(inputs, trained_weigths))
 
-neuron = NeuralNetwork()
-
-training_set_inputs = array([
+train_inputs = np.array([
 	[0, 0, 1],
 	[0, 1, 0],
-	[1, 0, 0],
-	[0, 0, 1] 
+	[1, 0, 0]
 ])
 
-training_set_outputs = array([
+outputs = np.array([
 	[0, 
 	 1,
-	 1,
-	 0]
+	 1
+	 ]
 ]).T
 
-neuron.train(train_inputs=training_set_inputs, right_output=training_set_outputs, n_iterations=10000)
+train(synaptic_weights=synaptic_weights, inputs=train_inputs, outputs=outputs, train_rate=10000)
 
-print "Weights after training: "
-print neuron.synaptic_weights
-
-print "Test new situation [1, 0, 0] -> ?: should return value close to 1"
-print neuron.calculate(array([1, 0, 0]))
-
+print "predict [1, 0, 1]: should return value close to 0"
+print test(synaptic_weights, [1, 0, 1])
