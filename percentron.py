@@ -49,8 +49,7 @@ def entrenamiento(entradas, salidas, pesos):
 
 	for entreno in range(0, 10000):
 		#Entranar el perceptron 10000 veces
-		for i in range(0, len(entradas)):
-			#Alimentar hacia adelante
+		for i in range(0, len(entradas)):		
 			sum = np.dot(entradas[i], pesos)#Sumatoria de entradas y pesos
 			parcial = activacion(sum, umbral)#Resultado parcial
 			error = calcular_error(salidas[i], parcial)#Error cometido, (Aprendizaje supervisado)
