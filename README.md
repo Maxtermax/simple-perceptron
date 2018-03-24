@@ -1,4 +1,4 @@
-# Ejemplo de perceptron de una sola capa
+# Ejemplo de perceptron
 
 ### Requerimientos: 
 1. [python 2.7](https://www.python.org/downloads/) (Lenguaje de programacion)
